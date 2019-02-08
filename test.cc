@@ -17,27 +17,26 @@ int main(int argc, char** argv)
   char h1name[50];
   sprintf(h1name,"Run Major = %d, Run Minor = %d, Evt Num = %d", major, minor, evNum);
 
-  /*
+  ///*
     TCanvas *delay = new TCanvas(h1name,h1name,850,850);
-    surfEvent->surf->ch[0]->Draw("al PLC");
-    surfEvent->surf->ch[0]->GetYaxis()->SetRangeUser(-400, 400);
-
-    for(int i=1; i<8; i++){//canvas loop
-    // surfEvent->surf->ch[i]->SetLineColor(i+1);
-    surfEvent->surf->ch[i]->Draw("l same PLC");
-    surfEvent->surf->ch[i]->GetYaxis()->SetRangeUser(-400, 600);
-
-    }//canvas loop  
+    TUtil::setCoolPalette();
+    //surfEvent->surf->ch[0]->GetXaxis()->SetRangeUser(0, 90);
+    surfEvent->surf->ch[6]->Draw("al PLC");
+    //  for(int i=1; i<8; i++){//canvas loop
+    // surfEvent->surf->ch[6]->SetLineColor(i+1);
+    surfEvent->surf->ch[0]->Draw("l same PLC");
+    //    }//canvas loop
+    delay->SetGrid();
+    delay->cd(1)->BuildLegend(.6, .7, .88, .88, "number of patterns", "l");
     delay->SaveAs("delay.png");
     delete delay;
-  */
+    // */
 
   
-  TCanvas *c4 = new TCanvas(h1name,h1name,850*4,850*2);
-  TUtil::setCoolPalette();
-  c4->Divide(4,2);
+  TCanvas *c4 = new TCanvas(h1name,h1name,850*4,850*3);
+  c4->Divide(4,3);
   c4->SetTitle(h1name);
-  for(int i=0; i<8; i++){//canvas loop
+  for(int i=0; i<12; i++){//canvas loop
     c4->cd(i+1);
     char ch_surf[50];
     //  surfEvent->surf->pos[i];
@@ -48,7 +47,7 @@ int main(int argc, char** argv)
     surfEvent->surf->ch[i]->SetTitle(ch_surf);
     //   surfEvent->surf->ch[i]->SetLineColor(i+1);
     surfEvent->surf->ch[i]->Draw("al PLC");
-    surfEvent->surf->ch[i]->GetXaxis()->SetRangeUser(50, 200);
+    // surfEvent->surf->ch[i]->GetXaxis()->SetRangeUser(0, 120);
 
   }//canvas loop
   char hname[50];
@@ -77,7 +76,7 @@ int main(int argc, char** argv)
   delete c3;
   /*
     for(int i=0; i<ev->scope->ch[0]->GetN(); i++){
-    //  cout << "i is " << i  << " Freq is " << ev->scope->ch[0]->GetX()[i] << endl;
+    //  coutd << "i is " << i  << " Freq is " << ev->scope->ch[0]->GetX()[i] << endl;
     }
   */
   TCanvas *c2 = new TCanvas(h1name,h1name,850*2,850*2);
