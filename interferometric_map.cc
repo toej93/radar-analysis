@@ -159,7 +159,7 @@ int main(int argc, char** argv)
 	  x1 = x-pos_vec[i].X();
 	  z1 = z-pos_vec[i].Z();
 	  double D_ant = (pos_vec[i]-pos_vec[j]).Mag();//Channel 0 was outside of the ring
-	  cout << D_ant << endl;
+	  // cout << D_ant << endl;
 	  Dtime[i][j][x_int][z_int]=(D_ant/clight)*sin(atan(x1/z1));
 	  //  cout << "x is " << x << endl;
 	  corr_value = Corr[i][j]->Eval(Dtime[i][j][x_int][z_int]);
@@ -200,7 +200,9 @@ int main(int argc, char** argv)
   palette->SetX2NDC(0.9);
   palette->SetY1NDC(0.1);
   palette->SetY2NDC(0.9);
-  gPad->Update(); 
+  gPad->Update();
+  TGraph2D* pointingMap(double dx=.3, int draw=1, int hilbert=1);
+
 
   interf_map->SaveAs("interferometric_map.png");
       
