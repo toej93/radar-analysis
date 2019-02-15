@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     int evNum;// = atof(argv[3]);
     T576Event * surfEvent = new T576Event();
     vector<TGraph*> graphs;
-    for(evNum=2; evNum<84; evNum+=3){//loop over events
+    for(evNum=0; evNum<84; evNum+=3){//loop over events
       ev->loadScopeEvent(major, minor, evNum);
       ev->loadSurfEvent(major, minor, evNum);
       // ev->setInterpGSs(80);
@@ -129,7 +129,7 @@ int main(int argc, char** argv)
   TVector3 pos_vec[12];
   T576Event * surfEvent = new T576Event();
   surfEvent->loadSurfEvent(major,minor, 0);
-  const double D_ant = 0.871557;// distance between adjacent antennas
+  //const double D_ant = 0.871557;// distance between adjacent antennas
   const double clight = 0.3; //speed of light in m/ns
   for(int i=0; i<12; i++){
     pos_vec[i] = surfEvent->surf->pos[i];
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
   int x_int = 0;
   int z_int = 0;
   for(int i=0; i<12; i++){ //Going to calculate the correlation plots for each pair of antennas. Will be excluding channel 0, as it's not in the u-shaped LPDA array.
-    for(int j=i; j<12; j++){//loop over j
+    for(int j=i; j<12; j++){//loop over j=i to avoid double sum
       if(j==i) continue;
       Corr[i][j] = TUtil::crossCorrelate(envelope[i], envelope[j]);
 	
@@ -158,7 +158,8 @@ int main(int argc, char** argv)
 	  double x1, z1;
 	  x1 = x-pos_vec[i].X();
 	  z1 = z-pos_vec[i].Z();
-
+	  double D_ant = (pos_vec[i]-pos_vec[j]).Mag();//Channel 0 was outside of the ring
+	  cout << D_ant << endl;
 	  Dtime[i][j][x_int][z_int]=(D_ant/clight)*sin(atan(x1/z1));
 	  //  cout << "x is " << x << endl;
 	  corr_value = Corr[i][j]->Eval(Dtime[i][j][x_int][z_int]);
