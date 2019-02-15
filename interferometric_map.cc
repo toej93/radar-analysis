@@ -2,6 +2,7 @@
 //#include "TUtil.hh"
 #include "TAttLine.h"
 #include "TPaletteAxis.h"
+#include "TF1.h"
 
 double getPeak(TGraph *gr)
 {
@@ -21,22 +22,33 @@ double getPeak(TGraph *gr)
 }
 
 
+TGraph *ImpulsiveWF(double offset)
+{
+  TF1 *fa1 = new TF1("fa1","0.5*(x-[0])*exp(-0.1*(x-[0])*(x-[0]))",0,250);
+  fa1->SetParameter(0,offset);
+  TGraph *g1 = new TGraph(fa1);
+  return g1;
+}
+
 int main(int argc, char** argv)
 {
   TGraph *avg_graph[12];
+  int major  = atof(argv[1]);
+  int minor = atof(argv[2]);
+  // /*
   vector<vector<TGraph*>> graphs_ch;
   for(int i=0;i<12;i++){    //loop over channels
     T576Event * ev = new T576Event();
-    int major  = 3;//atof(argv[1]);
-    int minor = 21;//atof(argv[2]);
+  
     int evNum;// = atof(argv[3]);
     T576Event * surfEvent = new T576Event();
     vector<TGraph*> graphs;
-    for(evNum=0; evNum<4; evNum+=3){//loop over events
+    for(evNum=0; evNum<84; evNum+=3){//loop over events
       ev->loadScopeEvent(major, minor, evNum);
       ev->loadSurfEvent(major, minor, evNum);
       // ev->setInterpGSs(80);
       surfEvent->loadSurfEvent(major, minor, evNum);
+      //  cout << ev-> txOn << endl;
       //surfEvent->setInterpGSs(10);
       //    if(i==0){
       double peak = getPeak(surfEvent->surf->ch[i]);
@@ -55,7 +67,25 @@ int main(int argc, char** argv)
     delete surfEvent;
     delete ev;
   }//loop over channels
-
+ // */
+  /*
+  TVector3 pos_vec[12];
+  T576Event * surfEvent = new T576Event();
+  surfEvent->loadSurfEvent(3, 21, 0);
+  const double D_ant = 0.871557;// distance between adjacent antennas
+  const double clight = 0.3; //speed of light in m/ns
+  for(int i=0; i<12; i++){
+    pos_vec[i] = surfEvent->surf->pos[i];
+  }
+  delete surfEvent;
+  TVector3 vsource(8,0,8);
+  double tfly[12];
+  for(int ch=0; ch<12; ch++){
+    tfly[ch] = (vsource-pos_vec[ch]).Mag()/clight;//in ns.
+    //cout << tfly[ch] << endl;
+    avg_graph[ch] = ImpulsiveWF(50.+tfly[ch]);
+  }
+  */
  
   
   TGraph * envelope[12];
@@ -74,7 +104,7 @@ int main(int argc, char** argv)
   }//canvas loop
   // char hname[50];
   //  sprintf(hname,"./wforms/SURF/wf_M%d_m%d_n%d.png",major, minor, evNum);
-  //  c0->SaveAs("avg_graph.png");
+  // c0->SaveAs("avg_graph.png");
   delete c0;
   
   TCanvas *delay = new TCanvas("","",1200,1200);
@@ -92,19 +122,20 @@ int main(int argc, char** argv)
   }//canvas loop
   delay->SetGrid();
   delay->cd(1)->BuildLegend(.6, .7, .88, .88, "number of patterns", "l");
-  //delay->SaveAs("delay.png");
+  // delay->SaveAs("delay.png");
   delete delay;
 
+  // /*
   TVector3 pos_vec[12];
   T576Event * surfEvent = new T576Event();
-  surfEvent->loadSurfEvent(3, 21, 0);
+  surfEvent->loadSurfEvent(major,minor, 0);
   const double D_ant = 0.871557;// distance between adjacent antennas
   const double clight = 0.3; //speed of light in m/ns
   for(int i=0; i<12; i++){
     pos_vec[i] = surfEvent->surf->pos[i];
   }
   delete surfEvent;
-
+  //  */
   TH2* interf = new TH2D(
       /* name */ "Interferometric map",
       /* title */ "Interferometric map",
@@ -115,9 +146,9 @@ int main(int argc, char** argv)
   int x_int = 0;
   int z_int = 0;
   for(int i=0; i<12; i++){ //Going to calculate the correlation plots for each pair of antennas. Will be excluding channel 0, as it's not in the u-shaped LPDA array.
-    for(int j=i+1; j<12; j++){//loop over j
+    for(int j=0; j<12; j++){//loop over j
       if(j==i) continue;
-      Corr[i][j] = TUtil::crossCorrelate(envelope[i], envelope[i]);
+      Corr[i][j] = TUtil::crossCorrelate(envelope[i], envelope[j]);
 	
       //Now we're going to loop over the x-z space
       //double x=-8.;
@@ -144,6 +175,7 @@ int main(int argc, char** argv)
 	    cout << "corr value is " << corr_value << endl;
 	    }*/
 	  interf->Fill(z,x,corr_value);
+	  //corr_value=0;
 	  //  z+=0.1;//increment 10 cm
 	  z_int++;
 	}//end loop over z
