@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     int evNum;// = atof(argv[3]);
     T576Event * surfEvent = new T576Event();
     vector<TGraph*> graphs;
-    for(evNum=0; evNum<84; evNum+=3){//loop over events
+    for(evNum=2; evNum<84; evNum+=3){//loop over events
       ev->loadScopeEvent(major, minor, evNum);
       ev->loadSurfEvent(major, minor, evNum);
       // ev->setInterpGSs(80);
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
   int x_int = 0;
   int z_int = 0;
   for(int i=0; i<12; i++){ //Going to calculate the correlation plots for each pair of antennas. Will be excluding channel 0, as it's not in the u-shaped LPDA array.
-    for(int j=0; j<12; j++){//loop over j
+    for(int j=i; j<12; j++){//loop over j
       if(j==i) continue;
       Corr[i][j] = TUtil::crossCorrelate(envelope[i], envelope[j]);
 	
